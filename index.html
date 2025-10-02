@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dr. Kunal Manna — Research Fellow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary: #16207a;
+      --secondary: #2e4ab3;
+      --accent: #00c1a7;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #222;
+      --sticky-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      scroll-behavior:smooth;
+    }
+
+    /* ---------- HERO ---------- */
+    .hero{
+      background: linear-gradient(135deg,var(--primary),var(--secondary));
+      color:#fff;
+      text-align:center;
+      padding:84px 20px 44px;
+      position:relative;
+      overflow:hidden;
+      transition:padding .35s ease, box-shadow .35s ease;
+    }
+    .hero .avatar{
+      width:156px;
+      height:156px;
+      border-radius:50%;
+      object-fit:cover;
+      border:4px solid rgba(255,255,255,0.96);
+      box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      display:inline-block;
+      transition:transform .35s ease;
+    }
+    .hero h1{ font-size:2.4rem; margin:14px 0 6px; line-height:1; }
+    .hero p{ margin:0; opacity:.92; font-size:1rem; }
+
+    /* hero nav (visible inside hero initially) */
+    .hero-nav{
+      margin-top:22px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .hero-nav a{
+      color:#fff;
+      text-decoration:none;
+      background: rgba(255,255,255,0.12);
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:600;
+      transition: background .22s, transform .15s;
+    }
+    .hero-nav a:hover{ background:var(--accent); transform:translateY(-3px) }
+
+    /* ---------- STICKY HEADER (overlay) ---------- */
+    .sticky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index:1100;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:10px 22px;
+      background: linear-gradient(90deg, rgba(22,32,122,0.98), rgba(46,74,179,0.98));
+      transform: translateY(-120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .32s cubic-bezier(.2,.9,.33,1), opacity .28s;
+      box-shadow: 0 6px 20px rgba(6,22,70,0.18);
+      backdrop-filter: blur(6px);
+    }
+
+    .sticky.show{ transform: translateY(0); opacity:1; pointer-events:auto; }
+
+    .sticky .profile-mini{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .sticky .profile-mini img{
+      width:52px; height:52px; border-radius:50%;
+      object-fit:cover;
+      border:2px solid rgba(255,255,255,0.95);
+      transition:transform .25s;
+    }
+    .sticky .name {
+      display: flex;
+      flex-direction: row; /* change from column to row */
+      align-items: center; /* vertically center text */
+      gap: 8px; /* space between name and title */
+      color: #fff;
+    }
+    .sticky .name h1 {
+      font-size: 1.05rem;
+      margin: 0;
+      font-weight: 700;
+    }
+    .sticky .name p {
+      margin: 0; /* remove top margin */
+      font-size: .85rem;
+      opacity: .9;
+    }
+
+    .sticky nav{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .sticky nav a{
+      color:#fff;
+      text-decoration:none;
+      padding:8px 12px;
+      border-radius:8px;
+      font-weight:600;
+      background: transparent;
+      transition: background .18s, transform .12s;
+    }
+    .sticky nav a:hover{ background: rgba(255,255,255,0.06); transform:translateY(-3px) }
+
+    /* hide hero nav while sticky visible */
+    .hero-nav.hidden{ opacity:0; transform:translateY(-8px); pointer-events:none }
+
+    /* ---------- MAIN CONTENT ---------- */
+    .container{
+      width: min(1100px, 92%);
+      margin: 32px auto;
+      padding-top: 12px; /* will get extra top spacing when sticky shown by JS */
+      transition: padding-top .2s;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      padding:26px;
+      margin-bottom:28px;
+      box-shadow: 0 10px 30px rgba(24,38,80,0.06);
+      opacity:0;
+      transform: translateY(28px);
+      transition: transform .7s cubic-bezier(.2,.9,.28,1), opacity .6s;
+    }
+    .card.visible{ opacity:1; transform:translateY(0) }
+    .card h2{ font-size:1.5rem; color:var(--primary); margin-bottom:10px }
+    .card ul{ padding-left:18px; margin-top:8px }
+    .card ul li{ margin-bottom:8px }
+
+    /* profile tabs */
+    .tabs{ display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; justify-content:center }
+    .tabs a{
+      background:var(--secondary);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+      transition:transform .14s, background .16s;
+    }
+    .tabs a:hover{ transform:translateY(-3px); background:var(--accent) }
+
+    /* FOOTER */
+    footer{ text-align:center; padding:20px; margin:40px 0 0; background:transparent; color:var(--primary) }
+
+    /* RESPONSIVE */
+    @media (max-width: 880px){
+      .hero{ padding:62px 16px 36px }
+      .hero h1{ font-size:1.9rem }
+      .hero .avatar{ width:124px; height:124px }
+      .sticky{ padding:8px 12px }
+      .sticky .name h1{ font-size:1rem }
+    }
+    @media (max-width:540px){
+      .hero{ padding:46px 12px 28px }
+      .hero .avatar{ width:112px; height:112px }
+      .hero-nav{ gap:8px }
+      .sticky nav{ display:none } /* mobile: keep nav simple, could add hamburger */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO (large centered) -->
+  <header class="hero" id="hero">
+    <img class="avatar" src="https://i.ibb.co/hxmts8Hx/kunal-manna.jpg" alt="Dr. Kunal Manna">
+    <h1>Dr. Kunal Manna</h1>
+    <p>Postdoctoral Research Fellow — WMG, University of Warwick</p>
+
+    <!-- nav showing inside hero (visible immediately) -->
+    <nav class="hero-nav" id="heroNav" aria-label="Main navigation">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#patents">Patents</a>
+      <a href="#talks">Talks</a>
+      <a href="#awards">Awards</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- STICKY HEADER (overlay shown/hidden by JS) -->
+  <div class="sticky" id="sticky" role="banner" aria-hidden="true">
+    <div class="profile-mini" aria-hidden="false">
+      <img src="https://i.ibb.co/hxmts8Hx/kunal-manna.jpg" alt="Dr. Kunal Manna">
+      <div class="name">
+        <h1>Dr. Kunal Manna</h1>
+        <p>Postdoctoral Research Fellow</p>
+      </div>
+    </div>
+
+    <nav aria-label="Sticky navigation">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+
+  <!-- MAIN -->
+  <main class="container" id="mainContent">
+    <section id="about" class="card">
+      <h2>About</h2>
+      <p>Dr. Kunal Manna is an EPSRC Postdoctoral Fellow at the Warwick Manufacturing Group (WMG), University of Warwick, UK.
+      He completed his PhD from IIT Kharagpur and works on polymer nanocomposites, vitrimer chemistry and EMI shielding.</p>
+    </section>
+
+    <section id="research" class="card">
+      <h2>Research Interests</h2>
+      <ul>
+        <li>Data-driven plastic recycling</li>
+        <li>Sustainable recycling & upcycling using vitrimer chemistry</li>
+        <li>Conducting polymer nanocomposites for EMI shielding</li>
+        <li>IPN membranes for water purification</li>
+      </ul>
+    </section>
+
+    <section id="publications" class="card">
+      <h2>Selected Publications</h2>
+      <ul>
+        <li>Manna K., et al. — "Molecular metal oxide clusters..." J. Mater. Chem. C (2023). <a href="https://doi.org/10.1039/D3TC01754K" target="_blank" rel="noopener">DOI</a></li>
+        <li>Srivastava S.K. & Manna K. — "EMI shielding review" J. Mater. Chem. A (2022). <a href="https://doi.org/10.1039/D1TA09522F" target="_blank" rel="noopener">DOI</a></li>
+      </ul>
+      <p style="margin-top:10px">Full list: <a href="https://scholar.google.com/citations?user=FzlxcSoAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></p>
+    </section>
+
+    <section id="patents" class="card">
+      <h2>Patents</h2>
+      <ul>
+        <li>ABS Vitrimer Recycling — Patent No. 532516 (2024)</li>
+        <li>Thermoplastic Polyolefin Vitrimer — Patent No. 549811 (2024)</li>
+        <li>Interpenetrating Polymeric Network — Patent No. 464732 (2023)</li>
+      </ul>
+    </section>
+
+    <section id="talks" class="card">
+      <h2>Conferences & Talks</h2>
+      <ul>
+        <li>International Rubber Conference — Istanbul (2024)</li>
+        <li>Polymers for Advanced Technology — Goa (Best Poster 2023)</li>
+      </ul>
+    </section>
+
+    <section id="contact" class="card">
+      <h2>Contact & Profiles</h2>
+      <p>Email: <a href="mailto:Kunal.Manna@warwick.ac.uk">Kunal.Manna@warwick.ac.uk</a></p>
+
+      <div class="tabs" role="navigation" aria-label="Profiles">
+        <a href="https://scholar.google.com/citations?user=FzlxcSoAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+        <a href="https://orcid.org/0000-0002-1746-8326" target="_blank" rel="noopener">ORCID</a>
+        <a href="https://www.researchgate.net/profile/Kunal_Manna" target="_blank" rel="noopener">ResearchGate</a>
+        <a href="https://warwick.ac.uk/fac/sci/wmg/research/materials/nanocomposites/people" target="_blank" rel="noopener">Warwick</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Dr. Kunal Manna</p>
+  </footer>
+
+  <script>
+    (function() {
+      const hero = document.getElementById('hero');
+      const sticky = document.getElementById('sticky');
+      const heroNav = document.getElementById('heroNav');
+      const container = document.getElementById('mainContent');
+      const cards = document.querySelectorAll('.card');
+
+      // threshold = hero height - little offset
+      function getThreshold() {
+        return Math.max(80, hero.offsetHeight - 120);
+      }
+
+      // show/hide sticky based on scroll
+      function onScroll() {
+        const y = window.scrollY || window.pageYOffset;
+        if (y > getThreshold()) {
+          if (!sticky.classList.contains('show')) {
+            sticky.classList.add('show');
+            heroNav.classList.add('hidden');
+            // add top padding so content isn't overlapped by sticky
+            const h = sticky.offsetHeight;
+            document.documentElement.style.setProperty('--sticky-height', h + 'px');
+            container.style.paddingTop = h + 18 + 'px';
+            sticky.setAttribute('aria-hidden', 'false');
+          }
+        } else {
+          if (sticky.classList.contains('show')) {
+            sticky.classList.remove('show');
+            heroNav.classList.remove('hidden');
+            container.style.paddingTop = '';
+            sticky.setAttribute('aria-hidden', 'true');
+          }
+        }
+      }
+
+      // throttle scroll using requestAnimationFrame
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => { onScroll(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+
+      // recompute on resize
+      window.addEventListener('resize', () => { onScroll(); });
+
+      // sections fade-in observer
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.12 });
+      cards.forEach(c => obs.observe(c));
+
+      // initial evaluate (in case page loaded scrolled)
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
